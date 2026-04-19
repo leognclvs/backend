@@ -1,3 +1,8 @@
-from .user import UserSerializer, UserCreateSerializer
+from .user import UserSerializer, UserCreateSerializer, UserUpdateSerializer
 from .profile import ProfileSerializer
-from .auth import LoginSerializer, ForgotPasswordSerializer, build_auth_payload
+from .auth import (
+    LoginSerializer,
+    ForgotPasswordSerializer,
+    ChangePasswordSerializer,
+    build_auth_payload,
+)

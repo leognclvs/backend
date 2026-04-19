@@ -6,9 +6,20 @@ from decouple import config, Csv
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
+def env_bool(name: str, default: bool = False) -> bool:
+    value = config(name, default=str(default))
+    normalized = str(value).strip().lower()
+
+    if normalized in {"1", "true", "yes", "on"}:
+        return True
+    if normalized in {"0", "false", "no", "off", "", "release", "prod", "production"}:
+        return False
+    return default
+
 # ── Security ────────────────────────────────────────────────────────────────
 SECRET_KEY = config("SECRET_KEY", default="change-me")
-DEBUG = config("DEBUG", default=False, cast=bool)
+DEBUG = env_bool("DEBUG", default=False)
 
 ALLOWED_HOSTS = config(
     "ALLOWED_HOSTS",
@@ -212,9 +223,9 @@ CACHES = {
 
 # ── Security (production) ──────────────────────────────────────────────────
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-SECURE_SSL_REDIRECT = config("SECURE_SSL_REDIRECT", default=False, cast=bool)
-SESSION_COOKIE_SECURE = config("SESSION_COOKIE_SECURE", default=False, cast=bool)
-CSRF_COOKIE_SECURE = config("CSRF_COOKIE_SECURE", default=False, cast=bool)
+SECURE_SSL_REDIRECT = env_bool("SECURE_SSL_REDIRECT", default=False)
+SESSION_COOKIE_SECURE = env_bool("SESSION_COOKIE_SECURE", default=False)
+CSRF_COOKIE_SECURE = env_bool("CSRF_COOKIE_SECURE", default=False)
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
 X_FRAME_OPTIONS = "DENY"

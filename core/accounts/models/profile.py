@@ -10,11 +10,12 @@ class Profile(BaseModel):
         related_name="profile"
     )
     bio = models.TextField(blank=True)
-    avatar = models.URLField(blank=True)
+    avatar = models.TextField(blank=True)
     preferred_language = models.CharField(max_length=50, blank=True)
     timezone = models.CharField(max_length=50, blank=True)
     public_visibility = models.BooleanField(default=True)
     website = models.URLField(blank=True)
+    preferences = models.JSONField(default=dict, blank=True)
 
     class Meta:
         ordering = ["user__email"]

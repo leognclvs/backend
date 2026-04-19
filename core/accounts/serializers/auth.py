@@ -34,6 +34,23 @@ class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 
+class ChangePasswordSerializer(serializers.Serializer):
+    current_password = serializers.CharField(write_only=True)
+    new_password = serializers.CharField(write_only=True, min_length=8)
+    new_password_confirm = serializers.CharField(write_only=True, min_length=8)
+
+    def validate(self, attrs):
+        user = self.context["request"].user
+
+        if not user.check_password(attrs["current_password"]):
+            raise serializers.ValidationError({"current_password": "Senha atual incorreta."})
+
+        if attrs["new_password"] != attrs["new_password_confirm"]:
+            raise serializers.ValidationError({"new_password_confirm": "A confirmação não confere."})
+
+        return attrs
+
+
 def build_auth_payload(user):
     refresh = RefreshToken.for_user(user)
     return {
