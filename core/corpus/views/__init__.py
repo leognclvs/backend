@@ -1,0 +1,5 @@
+from .example_sentence import ExampleSentenceViewSet
+from .example_word import ExampleSentenceWordViewSet
+from .translation import TranslationViewSet
+from .corpus_text import CorpusTextViewSet
+from .annotation import CorpusAnnotationViewSet
