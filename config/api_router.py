@@ -36,8 +36,14 @@ from core.corpus.views import (
     CorpusTextViewSet,
     CorpusAnnotationViewSet,
 )
+from core.languages.views.public import PublicLanguageViewSet
+from core.projects.views.public import PublicProjectViewSet
 
 router = DefaultRouter()
+
+# PUBLIC ENDPOINTS
+router.register(r"public/languages", PublicLanguageViewSet, basename="public-language")
+router.register(r"public/projects", PublicProjectViewSet, basename="public-project")
 
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"profiles", ProfileViewSet, basename="profile")
