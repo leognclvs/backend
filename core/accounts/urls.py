@@ -10,6 +10,8 @@ from core.accounts.views.auth import (
     ForgotPasswordView,
 )
 
+from core.accounts.views.dashboard import DashboardSummaryView
+
 router = DefaultRouter()
 router.register(r"users", UserViewSet, basename="user")
 router.register(r"profiles", ProfileViewSet, basename="profile")
@@ -23,4 +25,7 @@ urlpatterns = [
     path("auth/me/", MeView.as_view()),
     path("auth/forgot-password/", ForgotPasswordView.as_view()),
     path("auth/token/refresh/", TokenRefreshView.as_view()),
+
+    # DASHBOARD
+    path("dashboard/summary/", DashboardSummaryView.as_view()),
 ]
