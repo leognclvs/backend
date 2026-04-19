@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "core.billing",
     "core.common",
     "core.corpus",
+    "core.forum",
     "core.languages",
     "core.lexicon",
     "core.morphology",
@@ -78,6 +79,7 @@ INSTALLED_APPS = [
 # ── Middleware ───────────────────────────────────────────────────────────────
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "core.common.middleware.RequestFirewallMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "corsheaders.middleware.CorsMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",

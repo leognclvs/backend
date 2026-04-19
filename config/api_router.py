@@ -2,6 +2,7 @@ from rest_framework.routers import DefaultRouter
 
 from core.accounts.views import UserViewSet, ProfileViewSet
 from core.billing.views import SubscriptionPlanViewSet, UserSubscriptionViewSet
+from core.forum.views import ForumCategoryViewSet, ForumThreadViewSet, ForumPostViewSet
 from core.projects.views import ProjectViewSet, ProjectMemberViewSet
 from core.languages.views import LanguageViewSet, LanguageMetadataViewSet, LanguageStageViewSet, DialectViewSet
 from core.writing.views import WritingSystemViewSet, ScriptSymbolViewSet, OrthographyRuleViewSet
@@ -50,6 +51,9 @@ router.register(r"profiles", ProfileViewSet, basename="profile")
 
 router.register(r"subscription-plans", SubscriptionPlanViewSet, basename="subscription-plan")
 router.register(r"user-subscriptions", UserSubscriptionViewSet, basename="user-subscription")
+router.register(r"forum-categories", ForumCategoryViewSet, basename="forum-category")
+router.register(r"forum-threads", ForumThreadViewSet, basename="forum-thread")
+router.register(r"forum-posts", ForumPostViewSet, basename="forum-post")
 
 router.register(r"projects", ProjectViewSet, basename="project")
 router.register(r"project-members", ProjectMemberViewSet, basename="project-member")

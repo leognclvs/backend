@@ -109,23 +109,38 @@ class UserUpdateSerializer(serializers.Serializer):
         if self.instance:
             qs = qs.exclude(pk=self.instance.pk)
         if qs.exists():
-            raise serializers.ValidationError("Já existe um usuário com este username.")
+            raise serializers.ValidationError("Ja existe um usuario com este username.")
         return username
+
+    def validate_display_name(self, value):
+        return value.strip()
+
+    def validate_bio(self, value):
+        return value.strip()
+
+    def validate_avatar_url(self, value):
+        return value.strip()
 
     def update(self, instance, validated_data):
         profile, _ = Profile.objects.get_or_create(user=instance)
+        user_update_fields = []
+        profile_update_fields = []
 
         if "username" in validated_data:
             instance.username = validated_data["username"]
+            user_update_fields.append("username")
 
         if "display_name" in validated_data:
-            instance.display_name = validated_data["display_name"].strip()
+            instance.display_name = validated_data["display_name"]
+            user_update_fields.append("display_name")
 
         if "bio" in validated_data:
-            profile.bio = validated_data["bio"].strip()
+            profile.bio = validated_data["bio"]
+            profile_update_fields.append("bio")
 
         if "avatar_url" in validated_data:
-            profile.avatar = validated_data["avatar_url"].strip()
+            profile.avatar = validated_data["avatar_url"]
+            profile_update_fields.append("avatar")
 
         if "preferences" in validated_data:
             incoming_preferences = validated_data["preferences"] or {}
@@ -133,11 +148,24 @@ class UserUpdateSerializer(serializers.Serializer):
             merged_preferences.update(incoming_preferences)
 
             profile.preferences = merged_preferences
-            profile.preferred_language = merged_preferences.get("language", profile.preferred_language)
-            profile.public_visibility = merged_preferences.get("profile_visibility") == "public"
+            profile.preferred_language = merged_preferences.get(
+                "language", profile.preferred_language
+            )
+            profile.public_visibility = (
+                merged_preferences.get("profile_visibility") == "public"
+            )
+            profile_update_fields.extend(
+                ["preferences", "preferred_language", "public_visibility"]
+            )
 
-        instance.save()
-        profile.save()
+        if user_update_fields:
+            user_update_fields.append("updated_at")
+            instance.save(update_fields=list(dict.fromkeys(user_update_fields)))
+
+        if profile_update_fields:
+            profile_update_fields.append("updated_at")
+            profile.save(update_fields=list(dict.fromkeys(profile_update_fields)))
+
         return instance
 
 
@@ -158,7 +186,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     def validate(self, data):
         if data["password"] != data["password_confirm"]:
-            raise serializers.ValidationError("As senhas não coincidem.")
+            raise serializers.ValidationError("As senhas nao coincidem.")
         return data
 
     def create(self, validated_data):
