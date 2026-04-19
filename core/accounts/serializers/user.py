@@ -1,5 +1,7 @@
 from copy import deepcopy
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.db import DatabaseError
 from rest_framework import serializers
 
 from core.accounts.models import Profile, User
@@ -39,6 +41,15 @@ def build_preferences(profile: Profile | None):
     return preferences
 
 
+def get_safe_profile(user: User) -> Profile | None:
+    try:
+        return user.profile
+    except (AttributeError, ObjectDoesNotExist, DatabaseError):
+        # Evita quebrar o payload de auth quando o perfil ainda nao existe
+        # ou quando o schema do banco nao foi migrado por completo.
+        return None
+
+
 class UserSerializer(serializers.ModelSerializer):
     avatar_url = serializers.SerializerMethodField()
     bio = serializers.SerializerMethodField()
@@ -66,11 +77,11 @@ class UserSerializer(serializers.ModelSerializer):
         ]
 
     def get_avatar_url(self, obj):
-        profile = getattr(obj, "profile", None)
+        profile = get_safe_profile(obj)
         return getattr(profile, "avatar", "") or ""
 
     def get_bio(self, obj):
-        profile = getattr(obj, "profile", None)
+        profile = get_safe_profile(obj)
         return getattr(profile, "bio", "") or ""
 
     def get_role(self, obj):
@@ -82,7 +93,7 @@ class UserSerializer(serializers.ModelSerializer):
         return "free"
 
     def get_preferences(self, obj):
-        return build_preferences(getattr(obj, "profile", None))
+        return build_preferences(get_safe_profile(obj))
 
 
 class UserUpdateSerializer(serializers.Serializer):
